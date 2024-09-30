@@ -99,7 +99,7 @@ def preprocess_rescale_sitk(img, new_min_val, new_max_val):
     # todo: rescale the intensities of the img to the range [new_min_val, new_max_val]
     # (hint: RescaleIntensity)
     """
-    rescaled_img = sitk.RescaleIntensity(img, output_minimum=new_min_val, output_maximum=new_max_val)  # todo: modify here
+    rescaled_img = sitk.RescaleIntensity(img, outputMinimum=new_min_val, outputMaximum=new_max_val)  # todo: modify here
 
     return rescaled_img
 
@@ -114,23 +114,18 @@ def register_images(img, label_img, atlas_img):
     registration_method = _get_registration_method(
         atlas_img, img
     )  # type: sitk.ImageRegistrationMethod
-    transform = None  # todo: modify here
-
-    registration_method = _get_registration_method(
-        atlas_img, img
-    )  # type: sitk.ImageRegistrationMethod
-    transform = sitk.ImageRegistrationMethod(registration_method)  # todo: modify here
+    transform = registration_method.Execute(atlas_img, img)  # todo: modify here
 
     # todo: apply the obtained transform to register the image (img) to the atlas image (atlas_img)
     # hint: 'Resample' (with referenceImage=atlas_img, transform=transform, interpolator=sitkLinear,
     # defaultPixelValue=0.0, outputPixelType=img.GetPixelIDValue())
-    registered_img = sitk.Resample(referenceImage=atlas_img, transform=transform, interpolator=sitkLinear, defaultPixelValue=0.0, outputPixelType=img.GetPixelIDValue())  # todo: modify here
+    registered_img = sitk.Resample(img, referenceImage=atlas_img, transform=transform, interpolator=sitk.Linear, defaultPixelValue=0.0, outputPixelType=img.GetPixelIDValue())  # todo: modify here
 
     # todo: apply the obtained transform to register the label image (label_img) to the atlas image (atlas_img), too
     # be careful with the interpolator type for label images!
     # hint: 'Resample' (with interpolator=sitkNearestNeighbor, defaultPixelValue=0.0,
     # outputPixelType=label_img.GetPixelIDValue())
-    registered_label = sitk.Resample(interpolator=sitkNearestNeighbor, defaultPixelValue=0.0, outputPixelType=label_img.GetPixelIDValue())  # todo: modify here
+    registered_label = sitk.Resample(label_img, referenceImage=atlas_img, transform=transform, interpolator=sitk.NearestNeighbor, defaultPixelValue=0.0, outputPixelType=label_img.GetPixelIDValue())  # todo: modify here
 
     return registered_img, registered_label
 
@@ -150,10 +145,10 @@ def postprocess_largest_component(label_img):
     POSTPROCESS_LARGEST_COMPONENT:
     # todo: get the connected components from the label_img (hint: 'ConnectedComponent')
     """
-    connected_components = ConnectedComponent(label_img)  # todo: modify here
+    connected_components = sitk.ConnectedComponent(label_img)# todo: modify here
 
     # todo: order the component by ascending component size (hint: 'RelabelComponent')
-    relabeled_components = RelabelComponent(connected_components)  # todo: modify here
+    Relabeled_components = sitk.RelabelComponent(connected_components, sortByObjectSize=True)  # todo: modify here
 
     largest_component = relabeled_components == 1  # zero is background
     return largest_component
