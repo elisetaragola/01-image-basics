@@ -119,13 +119,13 @@ def register_images(img, label_img, atlas_img):
     # todo: apply the obtained transform to register the image (img) to the atlas image (atlas_img)
     # hint: 'Resample' (with referenceImage=atlas_img, transform=transform, interpolator=sitkLinear,
     # defaultPixelValue=0.0, outputPixelType=img.GetPixelIDValue())
-    registered_img = sitk.Resample(img, referenceImage=atlas_img, transform=transform, interpolator=sitk.Linear, defaultPixelValue=0.0, outputPixelType=img.GetPixelIDValue())  # todo: modify here
+    registered_img = sitk.Resample(img, referenceImage=atlas_img, transform=transform, interpolator=sitk.sitkLinear, defaultPixelValue=0.0, outputPixelType=img.GetPixelIDValue())  # todo: modify here
 
     # todo: apply the obtained transform to register the label image (label_img) to the atlas image (atlas_img), too
     # be careful with the interpolator type for label images!
     # hint: 'Resample' (with interpolator=sitkNearestNeighbor, defaultPixelValue=0.0,
     # outputPixelType=label_img.GetPixelIDValue())
-    registered_label = sitk.Resample(label_img, referenceImage=atlas_img, transform=transform, interpolator=sitk.NearestNeighbor, defaultPixelValue=0.0, outputPixelType=label_img.GetPixelIDValue())  # todo: modify here
+    registered_label = sitk.Resample(label_img, referenceImage=atlas_img, transform=transform, interpolator=sitk.sitkNearestNeighbor, defaultPixelValue=0.0, outputPixelType=label_img.GetPixelIDValue())  # todo: modify here
 
     return registered_img, registered_label
 
@@ -148,7 +148,7 @@ def postprocess_largest_component(label_img):
     connected_components = sitk.ConnectedComponent(label_img)# todo: modify here
 
     # todo: order the component by ascending component size (hint: 'RelabelComponent')
-    Relabeled_components = sitk.RelabelComponent(connected_components, sortByObjectSize=True)  # todo: modify here
+    relabeled_components = sitk.RelabelComponent(connected_components, sortByObjectSize=True)  # todo: modify here
 
     largest_component = relabeled_components == 1  # zero is background
     return largest_component
